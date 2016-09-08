@@ -71,6 +71,8 @@ render: function() {
                  onKeyDown = {props.press}>
         <input
             className = "toggle_all"
+            onChange = {props.toggleAll}
+            checked = {props.checked}
             type = "checkbox"
             />
         <input
@@ -93,11 +95,12 @@ var Footer = React.createClass({
             <div className = {props.data.length > 0 ? "footer visible":"footer disable"}>
             <div className = "footer__counter"> {props.count} items left</div>
             <div className = "filters">
-                <button className = "footer__filter" onClick = {props.click}>All</button>
-                <button className = "footer__filter filter--active" onClick = {props.click}>Active</button>
-                <button className = "footer__filter filter--completed" onClick = {props.click}>Complete</button>
+                <button className = {classNames("footer__filter", {selected: props.nowShowing == "all"})} onClick = {props.click}>All</button>
+                <button className = {classNames("footer__filter filter--active", {selected: props.nowShowing == "active"})} onClick = {props.click}>Active</button>
+                <button className = {classNames("footer__filter filter--completed", {selected: props.nowShowing == "completed"})} onClick = {props.click}>Completed</button>
             </div>
-            <button className = {completed.length > 0 ? "footer__clear":"footer__clear footer__clear--none"}>Clear completed</button>
+            <button className = {completed.length > 0 ? "footer__clear":"footer__clear footer__clear--none"}
+                    onClick = {props.clearClick}>Clear completed</button>
         </div>
         )
     }
@@ -110,6 +113,7 @@ var TodoApp = React.createClass({
             count: 0,
             nowShowing: "all",
             checked: false,
+            toggleAllChecked: false,
             DATA: []
         };
     },
@@ -123,6 +127,44 @@ var TodoApp = React.createClass({
                     completed: false
                 }]),
                 checked: false
+            });
+        }
+    },
+    toggleAll: function(e) {
+        var data = this.state.DATA,
+            findFalse = function(todo) {
+            return !todo.completed;
+            },
+            findTrue = function(todo) {
+            return todo.completed;
+        },
+        setTrue = function() {
+            if(data.some(findFalse)) {
+                data.map(function(todo) {
+                    todo.completed = true;
+                })
+            }
+            return data;
+        },
+            setFalse = function() {
+                if(data.every(findTrue)) {
+                    data.map(function(todo) {
+                        todo.completed = false;
+                    })
+                }
+                return data;
+            };
+        if(e.target.checked) {
+            this.setState({
+                toggleAllChecked: true,
+                DATA: setTrue(),
+                count: 0
+            });
+        } else {
+            this.setState({
+                toggleAllChecked: false,
+                DATA: setFalse(),
+                count: data.length
             });
         }
     },
@@ -146,12 +188,20 @@ var TodoApp = React.createClass({
                 count: active.length-1,
                 todo: complete()
             });
+            console.log(this.state.todo);
         } else {
             this.setState({
                 checked: false,
                 count: active.length+1,
                 todo: complete()
             });
+        }
+        if(data.every(function(todo) {
+                return todo.completed;
+            })) {
+            this.setState({
+                toggleAllChecked: true
+            })
         }
     },
     deleteItem: function(e) {
@@ -161,12 +211,22 @@ var TodoApp = React.createClass({
             count: active.length-1
         });
     },
+    clearCompleted: function() {
+        var data = this.state.DATA.filter(function(todo) {
+            return !todo.completed;
+        });
+        this.setState({
+            DATA: data,
+            toggleAllChecked: false
+        })
+    },
     tabs: function(e) {
-    if(e.target.className == "footer__filter filter--active") {
+        var className = e.target.className;
+    if(className == "footer__filter filter--active") {
         this.setState({
             nowShowing: "active"
         });
-    } else if(e.target.className == "footer__filter filter--completed") {
+    } else if(className == "footer__filter filter--completed") {
         this.setState({
             nowShowing: "completed"
         });
@@ -181,6 +241,8 @@ var TodoApp = React.createClass({
             <div className = "todo_app">
                 <Header change = {this.handlerChange}
                         press = {this.onKeyDownNewTodo}
+                        toggleAll = {this.toggleAll}
+                        checked = {this.state.toggleAllChecked}
                         value = {this.state.input_value}
                     />
                 <TodoList click = {this.deleteItem}
@@ -190,6 +252,7 @@ var TodoApp = React.createClass({
                     />
                 <Footer count = {this.state.count}
                         click = {this.tabs}
+                        clearClick = {this.clearCompleted}
                         nowShowing = {this.state.nowShowing}
                         data = {this.state.DATA}
                     />
