@@ -1,0 +1,30 @@
+{
+  "name": "gulp_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-livereload": "^3.8.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-uncss": "^1.0.6",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marinakln/TODO-React.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marinakln/TODO-React/issues"
+  },
+  "homepage": "https://github.com/Marinakln/TODO-React#readme"
+}

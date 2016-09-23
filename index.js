@@ -89,19 +89,48 @@ render: function() {
 
 var Footer = React.createClass({
     render: function() {
-        var props = this.props;
-
+        var props = this.props,
+            clearButton = null,
+            footer = null;
+        if(completed.length > 0) {
+            clearButton = (
+                <button
+                    className = "footer__clear"
+                    onClick = {props.clearClick}>
+                    Clear completed
+                </button>
+            )}
+        if(props.data.length > 0) {
+            footer = (
+                <div className = "footer">
+                    <div className = "footer__counter"> {props.count} items left</div>
+                    <div className = "filters">
+                        <button className = {classNames("footer__filter", {selected: props.nowShowing == "all"})}
+                                value = "all"
+                                onClick = {props.click}>
+                            All
+                        </button>
+                        <button className = {classNames("footer__filter", {selected: props.nowShowing == "active"})}
+                                value = "active"
+                                onClick = {props.click}>
+                            Active
+                        </button>
+                        <button className = {classNames("footer__filter", {selected: props.nowShowing == "completed"})}
+                                value = "completed"
+                                onClick = {props.click}>
+                            Completed
+                        </button>
+                    </div>
+                    <div className = "clear-button_box">
+                       {clearButton}
+                    </div>
+                </div>
+            )
+        }
         return (
-            <div className = {props.data.length > 0 ? "footer visible":"footer disable"}>
-            <div className = "footer__counter"> {props.count} items left</div>
-            <div className = "filters">
-                <button className = {classNames("footer__filter", {selected: props.nowShowing == "all"})} onClick = {props.click}>All</button>
-                <button className = {classNames("footer__filter filter--active", {selected: props.nowShowing == "active"})} onClick = {props.click}>Active</button>
-                <button className = {classNames("footer__filter filter--completed", {selected: props.nowShowing == "completed"})} onClick = {props.click}>Completed</button>
+            <div>
+                {footer}
             </div>
-            <button className = {completed.length > 0 ? "footer__clear":"footer__clear footer__clear--none"}
-                    onClick = {props.clearClick}>Clear completed</button>
-        </div>
         )
     }
 });
@@ -221,12 +250,12 @@ var TodoApp = React.createClass({
         })
     },
     tabs: function(e) {
-        var className = e.target.className;
-    if(className == "footer__filter filter--active") {
+        var value = e.target.value;
+    if(value == "active") {
         this.setState({
             nowShowing: "active"
         });
-    } else if(className == "footer__filter filter--completed") {
+    } else if(value == "completed") {
         this.setState({
             nowShowing: "completed"
         });
