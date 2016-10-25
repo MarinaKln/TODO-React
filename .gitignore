@@ -1,2 +1,6 @@
 # Ignore node_modules
 node_modules
+
+#Ignore gulp
+gulpfile.js
+package.json
